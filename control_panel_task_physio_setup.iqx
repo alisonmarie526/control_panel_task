@@ -76,7 +76,7 @@ Physio software interaction
 <port PITMachPhysio>
 / port = LPT 
 / subport = data
-/ items = ("00000000") // red = 126, blue = 132, greeen = 134, yellow = 140
+/ items = ("10110101","10110110","10110111","10111000","10111001","10111010") // 181-186: social1-3, fractal1-3
 </port>
 
 <port experimentEndPhysio>
@@ -88,13 +88,13 @@ Physio software interaction
 <port leftStimuliChosenPhysio>
 / port = LPT 
 / subport = data
-/ items = ("00000000")  // S CS+ = 149, S CS- = 153, NS CS+ = 171, NS CS- = 178
+/ items = ("10111011")  // 187
 </port>
 
 <port rightStimuliChosenPhysio>
 / port = LPT 
 / subport = data
-/ items = ("00000000")  // S CS+ = 149, S CS- = 153, NS CS+ = 171, NS CS- = 178
+/ items = ("10111100")  // 188
 </port>
 
 <expressions>

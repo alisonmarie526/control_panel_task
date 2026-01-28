@@ -161,8 +161,8 @@ Values which will be updated during the trials
 / pitITIDur = ""
 / pitTrialNum = ""
 / pavITIDur = ""
-/ numPavBlockCorrectQuiz = ""
-/ pavBlockQuizNumCorrect = ""
+/ numPavBlockCorrectQuiz = 0
+/ pavBlockQuizNumCorrect = 0
 / rightSocialTrialNum = ""
 / leftSocialTrialNum = ""
 / rightFractalTrialNum = ""
@@ -177,7 +177,7 @@ Values which will be updated during the trials
 / pavQuizType = ""
 / thisBlockCorrectQuizzes = ""
 / pavQuizResponse = ""
-/ pavTrialNum = ""
+/ pavTrialNum = 0
 / pitTrialTypeNum = ""
 / pitTrialType = ""
 / responseKeyPressed = ""
@@ -207,6 +207,9 @@ Values which will be updated during the trials
 / physioMarkerinstRightStimuli = ""
 / currentOutcomeLeft = ""
 / currentOutcomeRight = ""
+/ instruBlockRichChoiceCount = 0
+/ instruBlockTotalChoices = 0
+/ physioMarkerPITcolor = 0
 </values>
 
 **************************************************************************************************************
@@ -804,6 +807,17 @@ Finding aversive sounds for the task
 / ontrialend = [
 	values.trialEndTime = script.elapsedtime;
 	values.trialDur = values.trialEndTime - values.trialStartTime;
+	if (trial.instruResponse.response == parameters.leftButtonBox) {
+		values.instruBlockTotalChoices = values.instruBlockTotalChoices + 1;
+		if (values.richInstOption == "l") {
+			values.instruBlockRichChoiceCount = values.instruBlockRichChoiceCount + 1;
+		}
+	} else if (trial.instruResponse.response == parameters.rightButtonBox) {
+		values.instruBlockTotalChoices = values.instruBlockTotalChoices + 1;
+		if (values.richInstOption == "r") {
+			values.instruBlockRichChoiceCount = values.instruBlockRichChoiceCount + 1;
+		}
+	}
 ]
 </trial>
 
@@ -1029,6 +1043,8 @@ Instrumental phase
 	values.thisBlockCorrectQuizzes = 0;
 	values.instruQuizResponse = "";
 	values.currentOutcome = "";
+	values.instruBlockRichChoiceCount = 0;
+	values.instruBlockTotalChoices = 0;
 	// should be 2 for the participant to pass that block's quiz
 ]
 / stimulustimes = [0 = instruBlockBeginPhysio; 998 = clearscreen]
@@ -1511,6 +1527,11 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 	if (values.instruQuizTrialNum == 2 && values.thisBlockCorrectQuizzes == 2) {
 		// Both quizzes are completed for this block and are correct
 		values.numBlockQuizzesPassedTotal = values.numBlockQuizzesPassedTotal + 1;
+	} else if (values.instruQuizTrialNum == 2 && values.thisBlockCorrectQuizzes < 2
+		&& values.instruBlockTotalChoices > 0
+		&& (values.instruBlockRichChoiceCount / values.instruBlockTotalChoices) > 0.5) {
+		// Quiz failed, but chose higher-valued action more often than not
+		values.numBlockQuizzesPassedTotal = values.numBlockQuizzesPassedTotal + 1;
 	}
 ]
 </trial>
@@ -1650,6 +1671,9 @@ The combination of human and fractal will be randomized and the location (right 
 	values.numBlockQuizzesPassedTotal = "";
 	values.responseKeyPressed = "";
 	values.currentOutcome = "";
+	values.pavBlockNum = 0;
+	values.pavBlockQuizNumCorrect = 0;
+	values.pavTrialNum = 0;
 ]
 / trials = [
 	1-4 = pavInstructions;
@@ -1988,11 +2012,11 @@ Pavlovian phase:
 / validresponse = (picture.socialStimuli1, picture.socialStimuli2, picture.socialStimuli3)
 / ontrialend = [
 	if (values.pavQuizOutcomeType == "leftInstru"){
-		values.pavQuizCorrectAnswer = values.leftInstButtonRelatedFractal;
+		values.pavQuizCorrectAnswer = values.leftInstButtonRelatedHuman;
 	} else if (values.pavQuizOutcomeType == "rightInstru"){
-		values.pavQuizCorrectAnswer = values.rightInstButtonRelatedFractal;
+		values.pavQuizCorrectAnswer = values.rightInstButtonRelatedHuman;
 	} else if (values.pavQuizOutcomeType == "safe"){
-		values.pavQuizCorrectAnswer = values.pavOnlyFractal;
+		values.pavQuizCorrectAnswer = values.pavOnlyHuman;
 	}
 	values.pavQuizAnswerStimuli = trial.pavQuizSocial.response;
 	if (values.pavQuizAnswerStimuli == "socialStimuli1" && values.pavQuizCorrectAnswer == 1) {
@@ -2073,11 +2097,11 @@ Pavlovian phase:
 / validresponse = (picture.socialStimuli1, picture.socialStimuli2, picture.socialStimuli3)
 / ontrialend = [
 	if (values.pavQuizOutcomeType == "leftInstru"){
-		values.pavQuizCorrectAnswer = values.leftInstButtonRelatedFractal;
+		values.pavQuizCorrectAnswer = values.leftInstButtonRelatedHuman;
 	} else if (values.pavQuizOutcomeType == "rightInstru"){
-		values.pavQuizCorrectAnswer = values.rightInstButtonRelatedFractal;
+		values.pavQuizCorrectAnswer = values.rightInstButtonRelatedHuman;
 	} else if (values.pavQuizOutcomeType == "safe"){
-		values.pavQuizCorrectAnswer = values.pavOnlyFractal;
+		values.pavQuizCorrectAnswer = values.pavOnlyHuman;
 	}
 	values.pavQuizAnswerStimuli = trial.pavQuizSocialConfirm.response;
 	if (values.pavQuizAnswerStimuli == "socialStimuli1" && values.pavQuizCorrectAnswer == 1) {
@@ -2355,6 +2379,18 @@ Pavlovian phase:
 	values.numPavBlockCorrectQuiz = 0;
 	values.pavQuizCorrectAnswer = "";
 	values.pavQuizOutcomeType = "";
+	list.pavTrialType.reset();
+	list.pavHumanSide.reset();
+	list.pavITIDurListR.reset();
+	list.pavITIDurListL.reset();
+	list.pavITIDurListP.reset();
+	list.leftInstruOutcomePav.reset();
+	list.rightInstruOutcomePav.reset();
+	list.pavQuizSeq.reset();
+	list.pavQuizSocial.reset();
+	list.pavQuizFractal.reset();
+	list.pavQuizAversiveOutcomeWithSocial.reset();
+	list.pavQuizAversiveOutcomeWithFractal.reset();
 ]
 / trials = [
 	1 = sendPavBlockBeginPhysio;
@@ -2373,14 +2409,12 @@ Pavlovian phase:
 / branch = [
 	if (values.pavBlockNum < 2) {
 		return block.pavBlock;
+	} else if (values.pavBlockQuizNumCorrect >= 2){ // move to PIT phase once 2 blocks are passed
+		return block.pitPhaseInstructions;
 	} else if (values.pavBlockNum >= 2 && values.pavBlockNum < parameters.maxNumBlocksPav && values.pavBlockQuizNumCorrect < 2){ // quiz correct less than 2
 		return block.pavBlock;
-	} else if (values.pavBlockNum >= 2 && values.pavBlockNum <= parameters.maxNumBlocksPav && values.pavBlockQuizNumCorrect == 2){ // move to PIT phase
-		return block.pitPhaseInstructions;
-	} else if (values.pavBlockNum == parameters.maxNumBlocksPav && values.pavBlockQuizNumCorrect < 2) {
-		return block.pitPhaseInstructions; // block.pavTermination; Participants may continue onto next phase, even if they have not passed the current phase.
 	} else {
-		return block.pavTermination; // should NEVER go into this loop
+		return block.pitPhaseInstructions; // proceed after max blocks, even if quizzes incorrect
 	}
 ]
 </block>
@@ -2477,7 +2511,7 @@ PIT phase instructions
 / onblockbegin = [
 	values.pavQuizConfirmAnswer = "";
 	values.pavQuizIsCorrect = "";
-	values.numPavBlockCorrectQuiz = "";
+	values.numPavBlockCorrectQuiz = 0;
 	values.pavQuizCorrectAnswer = "";
 	values.pavQuizOutcomeType = "";
 	
@@ -2510,11 +2544,11 @@ PIT Phase
 	values.pitITIDur = format("%.2f", expressions.PITphaseITI - 2) + 2;
 	values.trialStartTime = trial.pitITIStart.timestamp;
 	values.pavQuizResponse = "";
-	values.markerETtrialID = 202;
+	values.markerETtrialID = 203;
 	values.markerETtrialID = concat(values.markerETtrialID, format("%02d", values.pitTrialNum));
-	values.markerETtrialID = concat(values.markerETtrialID, 500);
-	values.markerETDisplayOn = 3050;
-	values.markerETdisplayOff = 5050;
+	values.markerETtrialID = concat(values.markerETtrialID, 700);
+	values.markerETDisplayOn = 3070;
+	values.markerETdisplayOff = 5070;
 	expressions.setport3;
 	expressions.setport4;
 	expressions.setport5;
@@ -2676,6 +2710,24 @@ PIT Phase
 		values.chooseFractalStimuli = values.pavOnlyFractal;
 		values.pitCueAssociatedButton = "safety";
 		trial.pitTrial.insertstimulustime(picture.fractalStimuli, 0);
+	}
+	if (parameters.includePhysio == 1) {
+		if (values.chooseSocialStimuli == 1) {
+			values.physioMarkerPITcolor = 1; // 181
+		} else if (values.chooseSocialStimuli == 2) {
+			values.physioMarkerPITcolor = 2; // 182
+		} else if (values.chooseSocialStimuli == 3) {
+			values.physioMarkerPITcolor = 3; // 183
+		} else if (values.chooseFractalStimuli == 1) {
+			values.physioMarkerPITcolor = 4; // 184
+		} else if (values.chooseFractalStimuli == 2) {
+			values.physioMarkerPITcolor = 5; // 185
+		} else if (values.chooseFractalStimuli == 3) {
+			values.physioMarkerPITcolor = 6; // 186
+		} else {
+			values.physioMarkerPITcolor = 0;
+		}
+		expressions.setport1;
 	}
 ]
 / stimulustimes = [0 = controlPanel, leverBothUpright, portETtrialID; 1 = portETdisplayOn; 1498 = portETdisplayOff; 1499 = portETtrialEnd] 
@@ -2849,10 +2901,3 @@ PIT Phase
 
 2-181 = pitITIStart; //2-211 = pitITIStart; we removed the no cue condition
 182 = PITend; // 212 = PITend;
-
-
-
-
-
-
-

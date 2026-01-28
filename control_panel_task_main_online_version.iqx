@@ -45,6 +45,9 @@ Initializing the parameters
 / PITResponseMaxTime = 2000
 / PITFeedbackDur = 1000
 
+/ maxNumBlocksInst = 4
+/ maxNumBlocksPav = 4
+
 / leftButtonBox = 203// 48				// response pad keyboard mode = 48; 	xid mode = 48; 		normal keyboard = left arrow = 203
 / rightButtonBox = 205// 33				// response pad keyboard mode = 33; 	xid mode =  176;	normal keyboard = right arrow = 205
 / spaceButtonBox = 57//32 				// response pad keyboard mode = 32; 	xid mode = 112; 	normal keyboard = space button = 57
@@ -151,8 +154,8 @@ Values which will be updated during the trials
 / pitITIDur = ""
 / pitTrialNum = ""
 / pavITIDur = ""
-/ numPavBlockCorrectQuiz = ""
-/ pavBlockQuizNumCorrect = ""
+/ numPavBlockCorrectQuiz = 0
+/ pavBlockQuizNumCorrect = 0
 / rightSocialTrialNum = ""
 / leftSocialTrialNum = ""
 / rightFractalTrialNum = ""
@@ -169,7 +172,7 @@ Values which will be updated during the trials
 / thisBlockCorrectQuizzes = ""
 / pavQuizzesInARowCorrect = ""
 / pavQuizResponse = ""
-/ pavTrialNum = ""
+/ pavTrialNum = 0
 / pitTrialTypeNum = ""
 / pitTrialType = ""
 / responseKeyPressed = ""
@@ -197,6 +200,9 @@ Values which will be updated during the trials
 / soundArousalRating = ""
 / physioMarkerinstLeftStimuli = ""
 / physioMarkerinstRightStimuli = ""
+/ instruBlockRichChoiceCount = 0
+/ instruBlockTotalChoices = 0
+/ physioMarkerPITcolor = 0
 </values>
 
 **************************************************************************************************************
@@ -938,6 +944,17 @@ Instrumental phase instructions
 / ontrialend = [
 	values.trialEndTime = script.elapsedtime;
 	values.trialDur = values.trialEndTime - values.trialStartTime;
+	if (trial.instruResponse.response == parameters.leftButtonBox) {
+		values.instruBlockTotalChoices = values.instruBlockTotalChoices + 1;
+		if (values.richInstOption == "l") {
+			values.instruBlockRichChoiceCount = values.instruBlockRichChoiceCount + 1;
+		}
+	} else if (trial.instruResponse.response == parameters.rightButtonBox) {
+		values.instruBlockTotalChoices = values.instruBlockTotalChoices + 1;
+		if (values.richInstOption == "r") {
+			values.instruBlockRichChoiceCount = values.instruBlockRichChoiceCount + 1;
+		}
+	}
 ]
 </trial>
 
@@ -991,6 +1008,8 @@ Instrumental phase
 	values.thisBlockCorrectQuizzes = 0;
 	values.instruQuizResponse = "";
 	values.currentOutcome = "";
+	values.instruBlockRichChoiceCount = 0;
+	values.instruBlockTotalChoices = 0;
 	// should be 2 for the participant to pass that block's quiz
 ]
 / stimulustimes = [0 = instruBlockBeginPhysio; 998 = clearscreen]
@@ -1279,10 +1298,11 @@ Instrumental phase
 	if (values.instruQuizTrialNum == 2 && values.thisBlockCorrectQuizzes == 2) {
 		// Both quizzes are completed for this block and are correct
 		values.numBlockQuizzesPassedTotal = values.numBlockQuizzesPassedTotal + 1;
-		values.numBlockQuizzesPassedInARow = values.numBlockQuizzesPassedInARow + 1;
-	} else if (values.instruQuizTrialNum == 2 && values.thisBlockCorrectQuizzes < 2) {
-		// Both quizzes are completed for this block but atleast one quiz was incorrect
-		values.numBlockQuizzesPassedInARow = values.numBlockQuizzesPassedInARow - 1;
+	} else if (values.instruQuizTrialNum == 2 && values.thisBlockCorrectQuizzes < 2
+		&& values.instruBlockTotalChoices > 0
+		&& (values.instruBlockRichChoiceCount / values.instruBlockTotalChoices) > 0.5) {
+		// Quiz failed, but chose higher-valued action more often than not
+		values.numBlockQuizzesPassedTotal = values.numBlockQuizzesPassedTotal + 1;
 	}
 ]
 / branch = [
@@ -1293,23 +1313,23 @@ Instrumental phase
 </trial>
 
 
-<block instBlock> // repeat blocks upto 8 times and a minimum of 2 times till the participant answers questions correctly two times in a row
+<block instBlock> // repeat blocks up to maxNumBlocksInst until the participant answers questions correctly on two blocks
 / onblockbegin = [
 	values.phaseName = "instruBlock";
 ]
 / trials = [
 	1 = sendInstruBlockBeginPhysio;
-	2-51 = instruITI_start;
-	52 = instruQuiz;
+	2-41 = instruITI_start;
+	42-43 = instruQuiz;
 ]
 / screencapture = true
 / datastreams = (eyetracker)
 / branch = [
-	if (values.numBlockQuizzesPassedInARow < 2 && values.instruBlockNum < 8) {
+	if (values.numBlockQuizzesPassedTotal < 2 && values.instruBlockNum < parameters.maxNumBlocksInst) {
 		return block.instBlock;
-	} else if (values.numBlockQuizzesPassedInARow < 2 && values.instruBlockNum == 8) {
+	} else if (values.numBlockQuizzesPassedTotal < 2 && values.instruBlockNum == parameters.maxNumBlocksInst) {
 		return block.instruTermination;
-	} else if (values.numBlockQuizzesPassedInARow == 2 && values.instruBlockNum <= 8){
+	} else if (values.numBlockQuizzesPassedTotal == 2 && values.instruBlockNum <= parameters.maxNumBlocksInst){
 		return block.pavPhaseInstructions;
 	}
 ]
@@ -1408,6 +1428,9 @@ The combination of human and fractal will be randomized and the location (right 
 	values.phaseName = "pavInstructions";
 	values.pavInstructionIndex = 0;
 	values.pavSetupTrialsCounter = 0;
+	values.pavBlockNum = 0;
+	values.pavBlockQuizNumCorrect = 0;
+	values.pavTrialNum = 0;
 ]
 / trials = [
 	1-4 = pavInstructions;
@@ -1723,11 +1746,11 @@ Pavlovian phase:
 / validresponse = (picture.socialStimuli1, picture.socialStimuli2, picture.socialStimuli3)
 / ontrialend = [
 	if (values.pavQuizOutcomeType == "leftInstru"){
-		values.pavQuizCorrectAnswer = values.leftInstButtonRelatedFractal;
+		values.pavQuizCorrectAnswer = values.leftInstButtonRelatedHuman;
 	} else if (values.pavQuizOutcomeType == "rightInstru"){
-		values.pavQuizCorrectAnswer = values.rightInstButtonRelatedFractal;
+		values.pavQuizCorrectAnswer = values.rightInstButtonRelatedHuman;
 	} else if (values.pavQuizOutcomeType == "safe"){
-		values.pavQuizCorrectAnswer = values.pavOnlyFractal;
+		values.pavQuizCorrectAnswer = values.pavOnlyHuman;
 	}
 
 	if (trial.pavQuizSocial.response == "socialStimuli1" && values.pavQuizCorrectAnswer == 1) {
@@ -1877,11 +1900,6 @@ Pavlovian phase:
 </trial>
 
 <trial pavQuizEnd>
-/ ontrialbegin = [	
-	if (values.pavQuizIsCorrect == 1){
-		values.pavBlockQuizNumCorrect = values.pavBlockQuizNumCorrect + 1;
-	}
-]
 / stimulustimes = [0 = portETdisplayOff; 1 = portETtrialEnd]
 / trialduration = 2
 / recorddata = false
@@ -1900,7 +1918,19 @@ Pavlovian phase:
 / onblockbegin = [
 	values.phaseName = "pavBlock";
 	values.pavBlockNum = values.pavBlockNum + 1;
-	values.pavBlockQuizNumCorrect = 0;
+	values.numPavBlockCorrectQuiz = 0;
+	list.pavTrialType.reset();
+	list.pavHumanSide.reset();
+	list.pavITIDurListR.reset();
+	list.pavITIDurListL.reset();
+	list.pavITIDurListP.reset();
+	list.leftInstruOutcomePav.reset();
+	list.rightInstruOutcomePav.reset();
+	list.pavQuizSeq.reset();
+	list.pavQuizSocial.reset();
+	list.pavQuizFractal.reset();
+	list.pavQuizAversiveOutcomeWithSocial.reset();
+	list.pavQuizAversiveOutcomeWithFractal.reset();
 ]
 / trials = [
 	1 = sendPavBlockBeginPhysio;
@@ -1910,23 +1940,23 @@ Pavlovian phase:
 / screencapture = true
 / datastreams = (eyetracker)
 / onblockend = [
-	if (values.pavBlockQuizNumCorrect == 6){ // all quizzes in this block are correct
-		values.pavQuizzesInARowCorrect = values.pavQuizzesInARowCorrect + 1;
-	} else if (values.pavBlockQuizNumCorrect < 6){
-		values.pavQuizzesInARowCorrect = 0;
-	}	
+	if (values.numPavBlockCorrectQuiz >= 5){ // all quizzes in this block are correct (>=5 of 6)
+		values.pavBlockQuizNumCorrect = values.pavBlockQuizNumCorrect + 1;
+	}
 	values.aversiveOutcomeYPos = 50%;
 	values.alarmTurnedOffYPos = 52.5%;
 ]
 / branch = [
 	if (values.pavBlockNum < 2) {
 		return block.pavBlock;
-	} else if (values.pavBlockNum >= 2 && values.pavBlockNum < 8 && values.pavQuizzesInARowCorrect < 2){
-		return block.pavBlock;
-	} else if (values.pavBlockNum >= 2 && values.pavBlockNum < 8 && values.pavQuizzesInARowCorrect == 2){ // move to PIT phase
+	} else if (values.pavBlockQuizNumCorrect >= 2){ // move to PIT phase once 2 blocks are passed
 		return block.pitPhaseInstructions;
-	} else if (values.pavBlockNum == 8 && values.pavQuizzesInARowCorrect < 2) {
-		return block.pavTermination;
+	} else if (values.pavBlockNum >= 2 && values.pavBlockNum < parameters.maxNumBlocksPav && values.pavBlockQuizNumCorrect < 2){
+		return block.pavBlock;
+	} else if (values.pavBlockNum == parameters.maxNumBlocksPav && values.pavBlockQuizNumCorrect < 2) {
+		return block.pitPhaseInstructions; // proceed after max blocks, even if quizzes incorrect
+	} else {
+		return block.pitPhaseInstructions; // fallback: avoid premature termination
 	}
 ]
 </block>
@@ -2037,11 +2067,11 @@ PIT Phase
 	values.pitITIDur = format("%.2f", expressions.PITphaseITI - 2) + 2;
 	values.trialStartTime = trial.pitITIStart.timestamp;
 	values.pavQuizResponse = "";
-	values.markerETtrialID = 202;
+	values.markerETtrialID = 203;
 	values.markerETtrialID = concat(values.markerETtrialID, format("%02d", values.pitTrialNum));
-	values.markerETtrialID = concat(values.markerETtrialID, 500);
-	values.markerETDisplayOn = 3050;
-	values.markerETdisplayOff = 5050;
+	values.markerETtrialID = concat(values.markerETtrialID, 700);
+	values.markerETDisplayOn = 3070;
+	values.markerETdisplayOff = 5070;
 	expressions.setport3;
 	expressions.setport4;
 	expressions.setport5;
@@ -2132,6 +2162,24 @@ PIT Phase
 		values.chooseSocialStimuli = "";
 		values.chooseFractalStimuli = "";
 		values.pitCueAssociatedButton = "safety";
+	}
+	if (parameters.includePhysio == 1) {
+		if (values.chooseSocialStimuli == 1) {
+			values.physioMarkerPITcolor = 1; // 181
+		} else if (values.chooseSocialStimuli == 2) {
+			values.physioMarkerPITcolor = 2; // 182
+		} else if (values.chooseSocialStimuli == 3) {
+			values.physioMarkerPITcolor = 3; // 183
+		} else if (values.chooseFractalStimuli == 1) {
+			values.physioMarkerPITcolor = 4; // 184
+		} else if (values.chooseFractalStimuli == 2) {
+			values.physioMarkerPITcolor = 5; // 185
+		} else if (values.chooseFractalStimuli == 3) {
+			values.physioMarkerPITcolor = 6; // 186
+		} else {
+			values.physioMarkerPITcolor = 0;
+		}
+		expressions.setport1;
 	}
 ]
 / stimulustimes = [0 = controlPanel, leverBothUpright, portETtrialID; 1 = portETdisplayOn]
@@ -2304,13 +2352,3 @@ PIT Phase
 / screencapture = true
 / datastreams = (eyetracker)
 </block>
-
-
-
-
-
-
-
-
-
-

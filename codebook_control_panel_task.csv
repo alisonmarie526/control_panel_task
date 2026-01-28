@@ -1,0 +1,44 @@
+Task,ttl_code,Description
+control_panel_task,101,physio: rewardAdisplayedPhysio
+control_panel_task,103,physio: rewardBdisplayedPhysio
+control_panel_task,109,physio: instruQuizFeedbackPhysio
+control_panel_task,111,physio: pavMachinePhysio
+control_panel_task,117,physio: pavSnackPhysio
+control_panel_task,119,physio: pavQuizFeedbackPhysio
+control_panel_task,149,physio: pavQuizPhysio
+control_panel_task,158,physio: instruBlockBeginPhysio
+control_panel_task,159,physio: pavPhaseBeginPhysio
+control_panel_task,165,physio: instruPhaseBeginPhysio
+control_panel_task,166,physio: sendPitBeginPhysio
+control_panel_task,167,physio: sendPavBlockBeginPhysio
+control_panel_task,168,physio: sendPavBeginPhysio
+control_panel_task,181,physio: PITMachPhysio social1
+control_panel_task,182,physio: PITMachPhysio social2
+control_panel_task,183,physio: PITMachPhysio social3
+control_panel_task,184,physio: PITMachPhysio fractal1
+control_panel_task,185,physio: PITMachPhysio fractal2
+control_panel_task,186,physio: PITMachPhysio fractal3
+control_panel_task,187,physio: leftStimuliChosenPhysio
+control_panel_task,188,physio: rightStimuliChosenPhysio
+control_panel_task,209,physio: experimentEndPhysio
+control_panel_task,1,eyetracker: portETexptBegin item value (port item; actual Eyelink message = values.markerETexpBegin if set)
+control_panel_task,60,eyetracker: portETtrialEnd
+control_panel_task,70,eyetracker: portETexptEnd
+control_panel_task,401,eyetracker: portETbuttonPressLeft
+control_panel_task,402,eyetracker: portETbuttonPressRight
+control_panel_task,201XX101,eyetracker: markerETtrialID format for instrumental trials (201 + 2-digit instruTrialNum + 101)
+control_panel_task,201XX301,eyetracker: markerETtrialID format for instrumental quiz/confirm trials (201 + 2-digit instruTrialNum + 301)
+control_panel_task,202XX500,eyetracker: markerETtrialID format for pavlovian trials (202 + 2-digit pavTrialNum + 500)
+control_panel_task,202XX20,eyetracker: markerETtrialID format for pavlovian quiz trials (202 + 2-digit pavTrialNum + 20)
+control_panel_task,202XX301,eyetracker: markerETtrialID format for pavlovian quiz confirm trials (202 + 2-digit pavTrialNum + 301)
+control_panel_task,203XX700,eyetracker: markerETtrialID format for PIT trials (203 + 2-digit pitTrialNum + 700)
+control_panel_task,3010,eyetracker: markerETDisplayOn (instrumental trials)
+control_panel_task,5010,eyetracker: markerETdisplayOff (instrumental trials)
+control_panel_task,3030,eyetracker: markerETDisplayOn (instrumental quiz/confirm + pav quiz confirm)
+control_panel_task,5030,eyetracker: markerETdisplayOff (instrumental quiz/confirm + pav quiz confirm)
+control_panel_task,3050,eyetracker: markerETDisplayOn (pavlovian trials)
+control_panel_task,5050,eyetracker: markerETdisplayOff (pavlovian trials)
+control_panel_task,302,eyetracker: markerETDisplayOn (pavlovian quiz trials)
+control_panel_task,502,eyetracker: markerETdisplayOff (pavlovian quiz trials)
+control_panel_task,3070,eyetracker: markerETDisplayOn (PIT trials)
+control_panel_task,5070,eyetracker: markerETdisplayOff (PIT trials)

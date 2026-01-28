@@ -1,0 +1,23 @@
+Task,ttl_code,Description
+control_panel_task,101,physio: rewardAdisplayedPhysio
+control_panel_task,103,physio: rewardBdisplayedPhysio
+control_panel_task,109,physio: instruQuizFeedbackPhysio
+control_panel_task,111,physio: pavMachinePhysio
+control_panel_task,117,physio: pavSnackPhysio
+control_panel_task,119,physio: pavQuizFeedbackPhysio
+control_panel_task,149,physio: pavQuizPhysio
+control_panel_task,158,physio: instruBlockBeginPhysio
+control_panel_task,159,physio: pavPhaseBeginPhysio
+control_panel_task,165,physio: instruPhaseBeginPhysio
+control_panel_task,166,physio: sendPitBeginPhysio
+control_panel_task,167,physio: sendPavBlockBeginPhysio
+control_panel_task,168,physio: sendPavBeginPhysio
+control_panel_task,181,physio: PITMachPhysio social1
+control_panel_task,182,physio: PITMachPhysio social2
+control_panel_task,183,physio: PITMachPhysio social3
+control_panel_task,184,physio: PITMachPhysio fractal1
+control_panel_task,185,physio: PITMachPhysio fractal2
+control_panel_task,186,physio: PITMachPhysio fractal3
+control_panel_task,187,physio: leftStimuliChosenPhysio
+control_panel_task,188,physio: rightStimuliChosenPhysio
+control_panel_task,209,physio: experimentEndPhysio

@@ -55,22 +55,28 @@ Physio software interaction
 / items = ("01110111") // 119
 </port>
 
+<port instruPhaseBeginPhysio>
+/ port = LPT
+/ subport = data
+/ items = ("10100101") // 165
+</port>
+
 <port sendPitBeginPhysio>
 / port = LPT 
 / subport = data
-/ items = ("10100100") // 164
+/ items = ("10100110") // 166
 </port>
 
 <port sendPavBlockBeginPhysio>
 / port = LPT 
 / subport = data
-/ items = ("10100100") // 164
+/ items = ("10100111") // 167
 </port>
 
 <port sendPavBeginPhysio>
 / port = LPT 
 / subport = data
-/ items = ("10100100") // 164
+/ items = ("10101000") // 168
 </port>
 
 <port PITMachPhysio>
@@ -99,7 +105,4 @@ Physio software interaction
 
 <expressions>
 / setport1 = port.PITMachPhysio.setitem(values.physioMarkerPITcolor, 1);
-
-/ setport4 = port.leftStimuliChosenPhysio.setitem(values.physioMarkerPitLeftStimuli, 1);
-/ setport5 = port.rightStimuliChosenPhysio.setitem(values.physioMarkerPitRightStimuli, 1);
 </expressions>

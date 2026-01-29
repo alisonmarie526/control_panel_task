@@ -49,9 +49,9 @@ Initializing the parameters
 / maxNumBlocksInst = 4
 / maxNumBlocksPav = 4
 
-/ leftButtonBox = 203 //3					// response pad keyboard mode = 48; 	xid mode = 48; 		normal keyboard = left arrow = 203
-/ rightButtonBox = 205//5				// response pad keyboard mode = 33; 	xid mode =  176;	normal keyboard = right arrow = 205
-/ spaceButtonBox = 57 //4 				// response pad keyboard mode = 32; 	xid mode = 112; 	normal keyboard = space button = 57
+/ leftButtonBox = 3 //203					// response pad keyboard mode = 48; 	xid mode = 48; 		normal keyboard = left arrow = 203
+/ rightButtonBox = 5//205				// response pad keyboard mode = 33; 	xid mode =  176;	normal keyboard = right arrow = 205
+/ spaceButtonBox = 4 //57 				// response pad keyboard mode = 32; 	xid mode = 112; 	normal keyboard = space button = 57
 </parameters>
 
 

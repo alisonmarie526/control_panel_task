@@ -1331,13 +1331,18 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 			values.chooseSound = "";
 			trial.instruFeedback.insertstimulustime(picture.alarmTurnedOff, 0);
 		}
-	} else {
-		// if no button is pressed, the participants receive a 3rd aversive noise
-		trial.instruFeedback.insertStimulusTime(picture.leverBothUpright, 0);
-		values.chooseSound = values.sound3rdAversive;
-		trial.instruFeedback.insertStimulusTime(sound.allTestSounds, 0);
-	}
-]
+		} else {
+			// if no button is pressed, the participants receive a 3rd aversive noise
+			trial.instruFeedback.insertStimulusTime(picture.leverBothUpright, 0);
+			values.chooseSound = values.sound3rdAversive;
+			trial.instruFeedback.insertStimulusTime(sound.allTestSounds, 0);
+		}
+		if (values.chooseAversiveOutcome == 1) {
+			trial.instruFeedback.insertstimulustime(rewardAdisplayedPhysio, 0);
+		} else if (values.chooseAversiveOutcome == 2) {
+			trial.instruFeedback.insertstimulustime(rewardBdisplayedPhysio, 0);
+		}
+	]
 / stimulustimes = [0 = clearscreen, controlPanel, portETtrialID; 1 = portETdisplayOn; 997 = portETdisplayOff; 998 = portETtrialEnd] 
 / response = noresponse
 / trialduration = parameters.instruFeedbackDur -1
@@ -1519,7 +1524,7 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 </trial>
 
 <trial instruQuizConfirmEnd>
-/ stimulustimes = [0 = portETdisplayOff; 1 = portETtrialEnd]
+/ stimulustimes = [0 = instruQuizFeedbackPhysio, portETdisplayOff; 1 = portETtrialEnd]
 / trialduration = 2
 / recorddata = false
 / screencapture = false
@@ -1654,7 +1659,7 @@ The combination of human and fractal will be randomized and the location (right 
 </trial>
 
 <trial sendPavBeginPhysio>
-/ stimulustimes = [0 = sendPavBeginPhysio]
+/ stimulustimes = [0 = pavPhaseBeginPhysio; 150 = sendPavBeginPhysio]
 / trialduration = 300
 / recorddata = false
 / screencapture = false
@@ -1870,14 +1875,19 @@ Pavlovian phase:
 	expressions.setport3;
 	expressions.setport4;
 	expressions.setport5;
-	if (values.tempTrialType == "p") {
-		trial.pavOutcome.insertstimulustime(picture.alarmTurnedOff, 0);
-	} else {
-		if (values.pavOutcomeType == -1) {
-			trial.pavOutcome.insertstimulustime(picture.aversiveOutcomeStimuli, 0);
-			trial.pavOutcome.insertstimulustime(sound.allTestSounds, 0);
-		} else {
+		if (values.tempTrialType == "p") {
 			trial.pavOutcome.insertstimulustime(picture.alarmTurnedOff, 0);
+		} else {
+			if (values.pavOutcomeType == -1) {
+				if (values.chooseAversiveOutcome == 1) {
+					trial.pavOutcome.insertstimulustime(pavMachinePhysio, 0);
+				} else if (values.chooseAversiveOutcome == 2) {
+					trial.pavOutcome.insertstimulustime(pavSnackPhysio, 0);
+				}
+				trial.pavOutcome.insertstimulustime(picture.aversiveOutcomeStimuli, 0);
+				trial.pavOutcome.insertstimulustime(sound.allTestSounds, 0);
+			} else {
+				trial.pavOutcome.insertstimulustime(picture.alarmTurnedOff, 0);
 		}
 	}
 ]
@@ -2356,7 +2366,7 @@ Pavlovian phase:
 </trial>
 
 <trial pavQuizEnd>
-/ stimulustimes = [0 = portETdisplayOff; 1 = portETtrialEnd]
+/ stimulustimes = [0 = pavQuizFeedbackPhysio, portETdisplayOff; 1 = portETtrialEnd]
 / trialduration = 2
 / recorddata = false
 / screencapture = false
@@ -2724,12 +2734,13 @@ PIT Phase
 			values.physioMarkerPITcolor = 5; // 185
 		} else if (values.chooseFractalStimuli == 3) {
 			values.physioMarkerPITcolor = 6; // 186
-		} else {
-			values.physioMarkerPITcolor = 0;
+			} else {
+				values.physioMarkerPITcolor = 0;
+			}
+			expressions.setport1;
+			trial.pitTrial.insertstimulustime(PITMachPhysio, 0);
 		}
-		expressions.setport1;
-	}
-]
+	]
 / stimulustimes = [0 = controlPanel, leverBothUpright, portETtrialID; 1 = portETdisplayOn; 1498 = portETdisplayOff; 1499 = portETtrialEnd] 
 / beginresponsetime = 0
 / validresponse = (parameters.leftButtonBox, parameters.rightButtonBox)
@@ -2869,9 +2880,9 @@ PIT Phase
 </trial>
 
 <trial sendPITBlockBeginPhysio>
-/ stimulusframes = [1 = clearscreen, sendPitBeginPhysio] 
+/ stimulustimes = [0 = sendPitBeginPhysio]
 / validresponse = (0)
-/ trialduration = 2 
+/ trialduration = 300
 / recorddata = false
 / screencapture = false
 </trial>

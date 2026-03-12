@@ -152,7 +152,7 @@ Values which will be updated during the trials
 / leftInstButtonRelatedFractal = ""
 / pavOnlyFractal = ""
 / tempTrialType = ""
-/ pavOutcomeType = "safe"
+/ pavOutcomeType = 0
 / pavQuizTrialNum = 0
 / typeOfAlert = ""
 / pavQuizOutcomeType = ""
@@ -193,6 +193,9 @@ Values which will be updated during the trials
 / tempSocialSide = ""
 / pavQuizYPos = 66%
 / alarmTurnedOffYPos = 52.5%
+/ pavOutcomeBranch = "unset"
+/ pavOutcomeAversiveChoice = ""
+/ pavOutcomeSound = ""
 / pavTrialHumanSide = ""
 / pitCueAssociatedButton = ""
 / pitResponseSide = ""
@@ -230,6 +233,7 @@ values.socialXPos, values.fractalXPos,
 values.instruQuizTrialNum, values.instruQuizResponse, values.thisBlockCorrectQuizzes, values.numBlockQuizzesPassedTotal, 
 values.typeOfAlert, values.socialXPos1, values.socialXPos2, values.socialXPos3, values.fractalXPos1, values.fractalXPos2, values.fractalXPos3, values.pavITIDur,
 values.pavOutcomeType,
+values.pavOutcomeBranch, values.pavOutcomeAversiveChoice, values.pavOutcomeSound,
 values.pavQuizResponse, values.pavQuizOutcomeType, values.pavQuizCorrectAnswer, values.pavQuizAnswerStimuli, values.pavQuizIsCorrect, values.numPavBlockCorrectQuiz, values.pavQuizConfirmAnswer,
 values.pitTrialNum, values.pitTrialTypeNum, values.pitTrialType, values.rightSocialTrialNum, values.leftSocialTrialNum, values.rightFractalTrialNum, values.leftFractalTrialNum, 
 values.safeSocialTrialNum, values.safeFractalTrialNum, values.pitCueAssociatedButton, values.pitResponseSide, values.pitResponseRichOption,
@@ -1573,8 +1577,6 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 	}
 ]
 </block>
-2-41 = instruITI_start;
-42-43 = instruQuiz;
 
 
 
@@ -1721,7 +1723,7 @@ Pavlovian phase:
 </list>
 
 <list rightInstruOutcomePav>
-/ items = ("aversive", "safe")
+/ items = (-1, 0)
 / itemprobabilities = (0.8, 0.2)
 / poolsize = 10
 / replace = false
@@ -1730,7 +1732,7 @@ Pavlovian phase:
 </list>
 
 <list leftInstruOutcomePav>
-/ items = ("aversive", "safe")
+/ items = (-1, 0)
 / itemprobabilities = (0.8, 0.2)
 / poolsize = 10
 / replace = false
@@ -1799,7 +1801,7 @@ Pavlovian phase:
 	} else if (values.tempTrialType == "r") {
 		values.pavOutcomeType = list.rightInstruOutcomePav.nextvalue;
 	} else {
-		values.pavOutcomeType = "safe";
+		values.pavOutcomeType = 0;
 	}
 	values.trialStartTime = trial.pavITI.timestamp;
 	
@@ -1862,6 +1864,9 @@ Pavlovian phase:
 	} else if (values.tempTrialType == "p") {
 		values.chooseAversiveOutcome = 0;
 	}
+	values.pavOutcomeBranch = "safe";
+	values.pavOutcomeAversiveChoice = values.chooseAversiveOutcome;
+	values.pavOutcomeSound = "";
 	values.aversiveOutcomeYPos = 50%;
 	values.alarmTurnedOffYPos = 52.5%;
 	values.trialStartTime = trial.pavOutcome.timestamp;
@@ -1879,15 +1884,21 @@ Pavlovian phase:
 	expressions.setport5;
 		if (values.tempTrialType == "p") {
 			trial.pavOutcome.insertstimulustime(picture.alarmTurnedOff, 0);
-		} else if (values.pavOutcomeType == "aversive") {
+		} else if ((values.pavOutcomeType == -1) || (values.pavOutcomeType == "aversive")) {
+			values.pavOutcomeBranch = "aversive";
+			values.pavOutcomeAversiveChoice = values.chooseAversiveOutcome;
+			values.pavOutcomeSound = values.chooseSound;
+			trial.pavOutcome.insertstimulustime(picture.aversiveOutcomeStimuli, 0);
+			trial.pavOutcome.insertstimulustime(sound.allTestSounds, 0);
 			if (values.chooseAversiveOutcome == 1) {
 				trial.pavOutcome.insertstimulustime(pavMachinePhysio, 0);
 			} else if (values.chooseAversiveOutcome == 2) {
 				trial.pavOutcome.insertstimulustime(pavSnackPhysio, 0);
 			}
-			trial.pavOutcome.insertstimulustime(picture.aversiveOutcomeStimuli, 0);
-			trial.pavOutcome.insertstimulustime(sound.allTestSounds, 0);
 		} else {
+			values.pavOutcomeBranch = "safe";
+			values.pavOutcomeAversiveChoice = 0;
+			values.chooseSound = "";
 			trial.pavOutcome.insertstimulustime(picture.alarmTurnedOff, 0);
 		}
 	]
@@ -2389,7 +2400,7 @@ Pavlovian phase:
 	values.numPavBlockCorrectQuiz = 0;
 	values.pavQuizCorrectAnswer = "";
 	values.pavQuizOutcomeType = "";
-	values.pavOutcomeType = "safe";
+	values.pavOutcomeType = 0;
 	list.pavTrialType.reset();
 	list.pavHumanSide.reset();
 	list.pavITIDurListR.reset();

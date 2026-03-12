@@ -28,10 +28,10 @@ Initializing the parameters
 **************************************************************************************************************
 // Parameters to be fixed before the experiment
 <parameters>
-/ lastScriptUpdated = "11/03/2025"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED 
+/ lastScriptUpdated = "03/12/2026"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED 
 									// Indicates the date that the Inquisit script was updated, which was used to collect the participant's data
-/ includePhysio = 0					// Set this to 1 if physio data needs to be recorded
-/ includeEyetracker = 0				// Set this to 1 if eye-tracking data needs to be recorded
+/ includePhysio = 1					// Set this to 1 if physio data needs to be recorded
+/ includeEyetracker = 1				// Set this to 1 if eye-tracking data needs to be recorded
 									// Also make sure for eye-tracking the <include> function is uncommented
 / pavLeftXPos = 42%
 / pavRightXPos = 56%
@@ -960,12 +960,12 @@ Instrumental phase instructions
 **************************************************************************************************************
 <item instInstructions>
 / 1 = "In this phase, your role is to interact with the control panel to prevent system alarms from being triggered."
-/ 2 = "On each trial, a control panel will appear on the top of the screen with two levers on the bottom. There are two types of system alerts that will be activated if you are unable to stop it from activating. Each lever is associated with avoiding one type of system alert. You must choose between the left and right levers by pressing the “L” or “R” button on the button box, respectively."
+/ 2 = "On each trial, a control panel will appear on the top of the screen with two levers on the bottom. There are two types of system alerts that will be activated if you are unable to stop it from activating. Each lever is associated with a specific type of system alert. You must choose between the left and right levers by pressing the “L” or “R” button on the button box, respectively."
 / 3 = "Make your selection as quickly as possible to ensure smooth system operations. If you fail to respond in time, a high-priority alarm will go off.
 ~n~nYour choices influence whether an alarm goes off. Some levers are more effective than others at preventing system alerts."
-/ 4 = "After each choice, you’ll see whether the alarm was successfully avoided (“Alarm turned off”) or triggered (a warning image and loud noise). Pay attention and try to learn which lever is more effective at preventing which alarms." 
+/ 4 = "After each choice, you’ll see whether the alarm was successfully avoided (“Alarm turned off”) or triggered (a warning image and loud noise). Pay attention and try to learn which lever is associated with each type of alarm and how effective it is at preventing it." 
 / 5 = "If you stop choosing a lever for several trials, its chance of successfully preventing an alarm may improve—so consider varying your responses strategically."
-/ 6 = "After each block of trials, you will answer a few questions to test your understanding of how the system works. You’ll continue playing blocks until you've demonstrated you understand the pattern of outcomes."
+/ 6 = "After each block of trials, you will answer a few questions to test your understanding of which levers are associated with which alarms. You’ll continue playing blocks until you've demonstrated you understand the pattern of outcomes."
 </item>
 
 <text instInstructions>
@@ -1359,7 +1359,7 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 
 
 <text instruQuizQuestion>
-/ items = ("Which button prevented this outcome?")
+/ items = ("Which button is associated with this outcome?")
 / fontstyle = ("Arial", 4%, false, false, false, false, 5, 1)
 / position = (50%, 30%)
 / size = (80%, 5%)
@@ -1552,8 +1552,8 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 ]
 / trials = [
 	1 = sendInstruBlockBeginPhysio;
-	2-6 = instruITI_start;
-	7-8 = instruQuiz;
+	2-41 = instruITI_start;
+	42-43 = instruQuiz;
 ]
 / onblockend = [
 	values.previousResponseKeyPressed = "";
@@ -2904,12 +2904,12 @@ PIT Phase
 ]
 / trials = [	
 	1 = sendPITBlockBeginPhysio;
-	2-51 = pitITIStart;
-	52 = PITend;
+	2-181 = pitITIStart;
+	182 = PITend;
 ]
 / screencapture = true
 / datastreams = (eyetracker)
 </block>
 
-2-181 = pitITIStart; //2-211 = pitITIStart; we removed the no cue condition
-182 = PITend; // 212 = PITend;
+//2-181 = pitITIStart; //2-211 = pitITIStart; we removed the no cue condition
+//182 = PITend; // 212 = PITend;

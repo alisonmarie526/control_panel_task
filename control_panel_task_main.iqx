@@ -152,7 +152,7 @@ Values which will be updated during the trials
 / leftInstButtonRelatedFractal = ""
 / pavOnlyFractal = ""
 / tempTrialType = ""
-/ pavOutcomeType = ""
+/ pavOutcomeType = "safe"
 / pavQuizTrialNum = 0
 / typeOfAlert = ""
 / pavQuizOutcomeType = ""
@@ -229,6 +229,7 @@ values.choiceSideButton, values.otherSideChoiceButton, values.previousResponseKe
 values.socialXPos, values.fractalXPos,
 values.instruQuizTrialNum, values.instruQuizResponse, values.thisBlockCorrectQuizzes, values.numBlockQuizzesPassedTotal, 
 values.typeOfAlert, values.socialXPos1, values.socialXPos2, values.socialXPos3, values.fractalXPos1, values.fractalXPos2, values.fractalXPos3, values.pavITIDur,
+values.pavOutcomeType,
 values.pavQuizResponse, values.pavQuizOutcomeType, values.pavQuizCorrectAnswer, values.pavQuizAnswerStimuli, values.pavQuizIsCorrect, values.numPavBlockCorrectQuiz, values.pavQuizConfirmAnswer,
 values.pitTrialNum, values.pitTrialTypeNum, values.pitTrialType, values.rightSocialTrialNum, values.leftSocialTrialNum, values.rightFractalTrialNum, values.leftFractalTrialNum, 
 values.safeSocialTrialNum, values.safeFractalTrialNum, values.pitCueAssociatedButton, values.pitResponseSide, values.pitResponseRichOption,
@@ -294,7 +295,7 @@ Creating stimuli
 </picture>
 
 <list chooseInstOutcome>
-/ items = (1, 2, 3)
+/ items = (1, 2)
 / selectionmode = random
 / replace = false
 / selectionrate = always
@@ -1023,7 +1024,8 @@ Instrumental phase
 / ontrialbegin = [
 	values.instRightAversiveOutcome = list.chooseInstOutcome.nextvalue;
 	values.instLeftAversiveOutcome = list.chooseInstOutcome.nextvalue;
-	values.noInstResponseOutcome = list.chooseInstOutcome.nextvalue;
+	// Reserve outcome 3 for no-response so lever-linked outcomes always map to the physio-coded alarms.
+	values.noInstResponseOutcome = 3;
 	values.richInstOption = list.buttonOptions.nextvalue;
 	values.poorInstOption = list.buttonOptions.nextvalue;
 	values.numBlockQuizzesPassedTotal = 0;
@@ -1062,7 +1064,7 @@ Instrumental phase
 / ontrialbegin = [
 	values.chooseSound = "";
 	values.currentOutcome = "";
-	values.chooseAversiveOutcome = "";
+	values.chooseAversiveOutcome = 0;
 	values.instruTrialNum += 1;
 	values.trialStartTime = trial.instruITI_start.timestamp;
 	values.markerETtrialID = 201;
@@ -1719,7 +1721,7 @@ Pavlovian phase:
 </list>
 
 <list rightInstruOutcomePav>
-/ items = (-1, 0)
+/ items = ("aversive", "safe")
 / itemprobabilities = (0.8, 0.2)
 / poolsize = 10
 / replace = false
@@ -1728,7 +1730,7 @@ Pavlovian phase:
 </list>
 
 <list leftInstruOutcomePav>
-/ items = (-1, 0)
+/ items = ("aversive", "safe")
 / itemprobabilities = (0.8, 0.2)
 / poolsize = 10
 / replace = false
@@ -1768,7 +1770,7 @@ Pavlovian phase:
 
 <trial pavITI>
 / ontrialbegin = [
-	values.chooseAversiveOutcome = "";
+	values.chooseAversiveOutcome = 0;
 	values.pavTrialNum = values.pavTrialNum + 1;
 	values.chooseSound = "";
 	// select which of the three sets to show: right/left instru option related or pav only neutral stimuli
@@ -1788,7 +1790,7 @@ Pavlovian phase:
 	} else if (values.tempTrialType == "p") {
 		values.chooseSocialStimuli = values.pavOnlyHuman;
 		values.chooseFractalStimuli = values.pavOnlyFractal;
-		values.chooseAversiveOutcome = "";
+		values.chooseAversiveOutcome = 0;
 		values.pavITIDur = list.pavITIDurListP.nextvalue;
 	}
 	// then choose probability of negative outcome for right/left related cues
@@ -1797,7 +1799,7 @@ Pavlovian phase:
 	} else if (values.tempTrialType == "r") {
 		values.pavOutcomeType = list.rightInstruOutcomePav.nextvalue;
 	} else {
-		values.pavOutcomeType = "";
+		values.pavOutcomeType = "safe";
 	}
 	values.trialStartTime = trial.pavITI.timestamp;
 	
@@ -1858,7 +1860,7 @@ Pavlovian phase:
 		values.chooseAversiveOutcome = values.instLeftAversiveOutcome;
 		values.chooseSound = values.leftButtonAversiveSound;
 	} else if (values.tempTrialType == "p") {
-		values.chooseAversiveOutcome = "";
+		values.chooseAversiveOutcome = 0;
 	}
 	values.aversiveOutcomeYPos = 50%;
 	values.alarmTurnedOffYPos = 52.5%;
@@ -1877,20 +1879,18 @@ Pavlovian phase:
 	expressions.setport5;
 		if (values.tempTrialType == "p") {
 			trial.pavOutcome.insertstimulustime(picture.alarmTurnedOff, 0);
+		} else if (values.pavOutcomeType == "aversive") {
+			if (values.chooseAversiveOutcome == 1) {
+				trial.pavOutcome.insertstimulustime(pavMachinePhysio, 0);
+			} else if (values.chooseAversiveOutcome == 2) {
+				trial.pavOutcome.insertstimulustime(pavSnackPhysio, 0);
+			}
+			trial.pavOutcome.insertstimulustime(picture.aversiveOutcomeStimuli, 0);
+			trial.pavOutcome.insertstimulustime(sound.allTestSounds, 0);
 		} else {
-			if (values.pavOutcomeType == -1) {
-				if (values.chooseAversiveOutcome == 1) {
-					trial.pavOutcome.insertstimulustime(pavMachinePhysio, 0);
-				} else if (values.chooseAversiveOutcome == 2) {
-					trial.pavOutcome.insertstimulustime(pavSnackPhysio, 0);
-				}
-				trial.pavOutcome.insertstimulustime(picture.aversiveOutcomeStimuli, 0);
-				trial.pavOutcome.insertstimulustime(sound.allTestSounds, 0);
-			} else {
-				trial.pavOutcome.insertstimulustime(picture.alarmTurnedOff, 0);
+			trial.pavOutcome.insertstimulustime(picture.alarmTurnedOff, 0);
 		}
-	}
-]
+	]
 / stimulustimes = [0 = controlPanel, socialStimuli, fractalStimuli, portETtrialID; 1 = portETdisplayOn; 998 = portETdisplayOff; 999 = portETtrialEnd]
 / trialduration = 1000
 / recorddata = true
@@ -2389,6 +2389,7 @@ Pavlovian phase:
 	values.numPavBlockCorrectQuiz = 0;
 	values.pavQuizCorrectAnswer = "";
 	values.pavQuizOutcomeType = "";
+	values.pavOutcomeType = "safe";
 	list.pavTrialType.reset();
 	list.pavHumanSide.reset();
 	list.pavITIDurListR.reset();

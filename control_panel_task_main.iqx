@@ -1343,9 +1343,9 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 			values.chooseSound = values.sound3rdAversive;
 			trial.instruFeedback.insertStimulusTime(sound.allTestSounds, 0);
 		}
-		if (values.chooseAversiveOutcome == 1) {
+		if (values.chooseAversiveOutcome == 2) {
 			trial.instruFeedback.insertstimulustime(rewardAdisplayedPhysio, 0);
-		} else if (values.chooseAversiveOutcome == 2) {
+		} else if (values.chooseAversiveOutcome == 3) {
 			trial.instruFeedback.insertstimulustime(rewardBdisplayedPhysio, 0);
 		}
 	]
@@ -1530,8 +1530,8 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 </trial>
 
 <trial instruQuizConfirmEnd>
-/ stimulustimes = [0 = instruQuizFeedbackPhysio, portETdisplayOff; 1 = portETtrialEnd]
-/ trialduration = 2
+/ stimulustimes = [1 = instruQuizFeedbackPhysio, portETdisplayOff; 100 = portETtrialEnd]
+/ trialduration = 150
 / recorddata = false
 / screencapture = false
 / ontrialend = [
@@ -1890,9 +1890,9 @@ Pavlovian phase:
 			values.pavOutcomeSound = values.chooseSound;
 			trial.pavOutcome.insertstimulustime(picture.aversiveOutcomeStimuli, 0);
 			trial.pavOutcome.insertstimulustime(sound.allTestSounds, 0);
-			if (values.chooseAversiveOutcome == 1) {
+			if (values.chooseAversiveOutcome == 2) {
 				trial.pavOutcome.insertstimulustime(pavMachinePhysio, 0);
-			} else if (values.chooseAversiveOutcome == 2) {
+			} else if (values.chooseAversiveOutcome == 3) {
 				trial.pavOutcome.insertstimulustime(pavSnackPhysio, 0);
 			}
 		} else {
@@ -2377,8 +2377,8 @@ Pavlovian phase:
 </trial>
 
 <trial pavQuizEnd>
-/ stimulustimes = [0 = pavQuizFeedbackPhysio, portETdisplayOff; 1 = portETtrialEnd]
-/ trialduration = 2
+/ stimulustimes = [1 = pavQuizFeedbackPhysio, portETdisplayOff; 100 = portETtrialEnd]
+/ trialduration = 150
 / recorddata = false
 / screencapture = false
 </trial>

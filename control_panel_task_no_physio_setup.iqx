@@ -36,6 +36,13 @@ This runs when we don't want physio data to be collected but need a switch in th
 / txcolor =  (26, 26, 26)     // 10% dark gray
 </text>
 
+<text instruOutcomePhysio>
+/ items = ("instruOutcomePhysio")
+/ position = (90%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor =  (26, 26, 26)     // 10% dark gray
+</text>
+
 <text sendPavBeginPhysio>
 / items = ("pav begin")
 / position = (90%, 2%)
@@ -73,6 +80,13 @@ This runs when we don't want physio data to be collected but need a switch in th
 
 <text pavSnackPhysio>
 / items = ("pavSnack")
+/ position = (90%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor = (26, 26, 26)     // 10% dark gray
+</text>
+
+<text pavOutcomePhysio>
+/ items = ("pavOutcomePhysio")
 / position = (90%, 2%)
 / fontstyle = ("Arial", 3%)
 / txcolor = (26, 26, 26)     // 10% dark gray
@@ -126,3 +140,8 @@ This runs when we don't want physio data to be collected but need a switch in th
 / fontstyle = ("Arial", 3%)
 / txcolor =  (26, 26, 26)     // 10% dark gray
 </text>
+
+<expressions>
+/ setport6 = 0
+/ setport7 = 0
+</expressions>

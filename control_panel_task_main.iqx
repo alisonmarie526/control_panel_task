@@ -28,7 +28,7 @@ Initializing the parameters
 **************************************************************************************************************
 // Parameters to be fixed before the experiment
 <parameters>
-/ lastScriptUpdated = "03/12/2026"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED 
+/ lastScriptUpdated = "05/05/2026"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED 
 									// Indicates the date that the Inquisit script was updated, which was used to collect the participant's data
 / includePhysio = 1					// Set this to 1 if physio data needs to be recorded
 / includeEyetracker = 1				// Set this to 1 if eye-tracking data needs to be recorded
@@ -212,9 +212,9 @@ Values which will be updated during the trials
 / currentOutcomeRight = ""
 / instruBlockRichChoiceCount = 0
 / instruBlockTotalChoices = 0
-/ physioMarkerPITcolor = 1
-/ physioMarkerInstruOutcome = 1
-/ physioMarkerPavOutcome = 1
+/ physioMarkerPITcolor = "00000000"
+/ physioMarkerInstruOutcome = "00000000"
+/ physioMarkerPavOutcome = "00000000"
 </values>
 
 **************************************************************************************************************
@@ -1313,7 +1313,7 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 	expressions.setport3;
 	expressions.setport4;
 	expressions.setport5;
-	values.physioMarkerInstruOutcome = 1;
+	values.physioMarkerInstruOutcome = "00000000";
 	if (trial.instruResponse.response == parameters.leftButtonBox) {
 		trial.instruFeedback.insertStimulustime(picture.leverLeftDown, 0);
 		values.currentOutcome = values.currentOutcomeLeft;
@@ -1348,9 +1348,9 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 			trial.instruFeedback.insertStimulusTime(sound.allTestSounds, 0);
 		}
 		if (values.chooseAversiveOutcome == 1) {
-			values.physioMarkerInstruOutcome = 2; // 101
+			values.physioMarkerInstruOutcome = "01100101"; // 101
 		} else if (values.chooseAversiveOutcome == 2) {
-			values.physioMarkerInstruOutcome = 3; // 103
+			values.physioMarkerInstruOutcome = "01100111"; // 103
 		}
 		expressions.setport6;
 	]
@@ -1887,7 +1887,7 @@ Pavlovian phase:
 	expressions.setport3;
 	expressions.setport4;
 	expressions.setport5;
-	values.physioMarkerPavOutcome = 1;
+	values.physioMarkerPavOutcome = "00000000";
 		if (values.tempTrialType == "p") {
 			trial.pavOutcome.insertstimulustime(picture.alarmTurnedOff, 0);
 		} else if ((values.pavOutcomeType == -1) || (values.pavOutcomeType == "aversive")) {
@@ -1897,9 +1897,9 @@ Pavlovian phase:
 			trial.pavOutcome.insertstimulustime(picture.aversiveOutcomeStimuli, 0);
 			trial.pavOutcome.insertstimulustime(sound.allTestSounds, 0);
 			if (values.chooseAversiveOutcome == 1) {
-				values.physioMarkerPavOutcome = 2; // 111
+				values.physioMarkerPavOutcome = "01101111"; // 111
 			} else if (values.chooseAversiveOutcome == 2) {
-				values.physioMarkerPavOutcome = 3; // 117
+				values.physioMarkerPavOutcome = "01110101"; // 117
 			}
 		} else {
 			values.pavOutcomeBranch = "safe";
@@ -2740,24 +2740,24 @@ PIT Phase
 		values.pitCueAssociatedButton = "safety";
 		trial.pitTrial.insertstimulustime(picture.fractalStimuli, 0);
 	}
-	if (parameters.includePhysio == 1) {
-		if (values.chooseSocialStimuli == 1) {
-			values.physioMarkerPITcolor = 2; // 181
-		} else if (values.chooseSocialStimuli == 2) {
-			values.physioMarkerPITcolor = 3; // 182
-		} else if (values.chooseSocialStimuli == 3) {
-			values.physioMarkerPITcolor = 4; // 183
-		} else if (values.chooseFractalStimuli == 1) {
-			values.physioMarkerPITcolor = 5; // 184
-		} else if (values.chooseFractalStimuli == 2) {
-			values.physioMarkerPITcolor = 6; // 185
-		} else if (values.chooseFractalStimuli == 3) {
-			values.physioMarkerPITcolor = 7; // 186
-			} else {
-				values.physioMarkerPITcolor = 1;
+		if (parameters.includePhysio == 1) {
+			if (values.chooseSocialStimuli == 1) {
+				values.physioMarkerPITcolor = "10110101"; // 181
+			} else if (values.chooseSocialStimuli == 2) {
+				values.physioMarkerPITcolor = "10110110"; // 182
+			} else if (values.chooseSocialStimuli == 3) {
+				values.physioMarkerPITcolor = "10110111"; // 183
+			} else if (values.chooseFractalStimuli == 1) {
+				values.physioMarkerPITcolor = "10111000"; // 184
+			} else if (values.chooseFractalStimuli == 2) {
+				values.physioMarkerPITcolor = "10111001"; // 185
+			} else if (values.chooseFractalStimuli == 3) {
+				values.physioMarkerPITcolor = "10111010"; // 186
+				} else {
+					values.physioMarkerPITcolor = "00000000";
+				}
+				expressions.setport1;
 			}
-			expressions.setport1;
-		}
 	]
 / stimulustimes = [0 = controlPanel, leverBothUpright, portETtrialID, PITMachPhysio; 1 = portETdisplayOn; 1498 = portETdisplayOff; 1499 = portETtrialEnd] 
 / beginresponsetime = 0

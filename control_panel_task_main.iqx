@@ -1354,7 +1354,7 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 		}
 		expressions.setport6;
 	]
-/ stimulustimes = [0 = clearscreen, controlPanel, portETtrialID, instruOutcomePhysio; 1 = portETdisplayOn; 997 = portETdisplayOff; 998 = portETtrialEnd] 
+/ stimulustimes = [0 = clearscreen, controlPanel, portETtrialID; 1 = portETdisplayOn; 10 = instruOutcomePhysio; 997 = portETdisplayOff; 998 = portETtrialEnd] 
 / response = noresponse
 / trialduration = parameters.instruFeedbackDur -1
 / screencapture = true

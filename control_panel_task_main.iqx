@@ -28,7 +28,7 @@ Initializing the parameters
 **************************************************************************************************************
 // Parameters to be fixed before the experiment
 <parameters>
-/ lastScriptUpdated = "05/05/2026"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED 
+/ lastScriptUpdated = "06/08/2026"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED
 									// Indicates the date that the Inquisit script was updated, which was used to collect the participant's data
 / includePhysio = 1					// Set this to 1 if physio data needs to be recorded
 / includeEyetracker = 1				// Set this to 1 if eye-tracking data needs to be recorded
@@ -213,7 +213,6 @@ Values which will be updated during the trials
 / instruBlockRichChoiceCount = 0
 / instruBlockTotalChoices = 0
 / physioMarkerPITcolor = "00000000"
-/ physioMarkerInstruOutcome = "00000000"
 / physioMarkerPavOutcome = "00000000"
 </values>
 
@@ -1313,7 +1312,6 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 	expressions.setport3;
 	expressions.setport4;
 	expressions.setport5;
-	values.physioMarkerInstruOutcome = "00000000";
 	if (trial.instruResponse.response == parameters.leftButtonBox) {
 		trial.instruFeedback.insertStimulustime(picture.leverLeftDown, 0);
 		values.currentOutcome = values.currentOutcomeLeft;
@@ -1348,13 +1346,12 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 			trial.instruFeedback.insertStimulusTime(sound.allTestSounds, 0);
 		}
 		if (values.chooseAversiveOutcome == 1) {
-			values.physioMarkerInstruOutcome = "01100101"; // 101
+			trial.instruFeedback.insertstimulustime(rewardAdisplayedPhysio, 10); // 101
 		} else if (values.chooseAversiveOutcome == 2) {
-			values.physioMarkerInstruOutcome = "01100111"; // 103
+			trial.instruFeedback.insertstimulustime(rewardBdisplayedPhysio, 10); // 103
 		}
-		expressions.setport6;
 	]
-/ stimulustimes = [0 = clearscreen, controlPanel, portETtrialID; 1 = portETdisplayOn; 10 = instruOutcomePhysio; 997 = portETdisplayOff; 998 = portETtrialEnd] 
+/ stimulustimes = [0 = clearscreen, controlPanel, portETtrialID; 1 = portETdisplayOn; 997 = portETdisplayOff; 998 = portETtrialEnd]
 / response = noresponse
 / trialduration = parameters.instruFeedbackDur -1
 / screencapture = true

@@ -19,6 +19,12 @@ Physio software interaction
 / items = ("01100111") // 103
 </port>
 
+<port instruOutcomePhysio>
+/ port = LPT
+/ subport = data
+/ items = ("00000000","01100101","01100111") // 0 = no TTL, 101 = rewardA, 103 = rewardB
+</port>
+
 <port instruQuizFeedbackPhysio> 
 / port = LPT 
 / subport = data
@@ -111,5 +117,6 @@ Physio software interaction
 
 <expressions>
 / setport1 = port.PITMachPhysio.setitem(values.physioMarkerPITcolor, 1);
+/ setport6 = port.instruOutcomePhysio.setitem(values.physioMarkerInstruOutcome, 1);
 / setport7 = port.pavOutcomePhysio.setitem(values.physioMarkerPavOutcome, 1);
 </expressions>

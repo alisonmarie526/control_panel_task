@@ -28,7 +28,7 @@ Initializing the parameters
 **************************************************************************************************************
 // Parameters to be fixed before the experiment
 <parameters>
-/ lastScriptUpdated = "06/23/2026"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED
+/ lastScriptUpdated = "06/25/2026"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED
 									// Indicates the date that the Inquisit script was updated, which was used to collect the participant's data
 / includePhysio = 1					// Set this to 1 if physio data needs to be recorded
 / includeEyetracker = 1				// Set this to 1 if eye-tracking data needs to be recorded
@@ -1229,7 +1229,32 @@ Instrumental phase
 	values.trialDur = values.trialEndTime - values.trialStartTime;
 ]
 / branch = [
-	return trial.instruFeedback;
+	values.currentOutcome = "";
+	values.chooseAversiveOutcome = 0;
+	values.chooseSound = "";
+	if (trial.instruResponse.response == parameters.leftButtonBox) {
+		values.currentOutcome = values.currentOutcomeLeft;
+		if (values.currentOutcome == -1) {
+			values.chooseAversiveOutcome = values.instLeftAversiveOutcome;
+			values.chooseSound = values.leftButtonAversiveSound;
+		}
+	} else if (trial.instruResponse.response == parameters.rightButtonBox) {
+		values.currentOutcome = values.currentOutcomeRight;
+		if (values.currentOutcome == -1) {
+			values.chooseAversiveOutcome = values.instRightAversiveOutcome;
+			values.chooseSound = values.rightButtonAversiveSound;
+		}
+	} else {
+		values.chooseSound = values.sound3rdAversive;
+	}
+
+	if (values.chooseAversiveOutcome == 1) {
+		return trial.instruFeedbackA;
+	} else if (values.chooseAversiveOutcome == 2) {
+		return trial.instruFeedbackB;
+	} else {
+		return trial.instruFeedbackNeutral;
+	}
 ]
 </trial>
 
@@ -1251,59 +1276,9 @@ Instrumental phase
 / selectionrate = always
 </list>
 
-if (trial.instruResponse.response == parameters.leftButtonBox) {
-		trial.instruFeedback.insertStimulustime(picture.leverLeftDown, 0);
-		// choosing if we should provide the aversive or alarm turned off outcome
-		if (values.richInstOption == "l") {
-			// if left button is the rich instrumental option
-			// rich option means that left button prevents the aversive outcome O1 with a 70% probability.
-			values.currentOutcome = list.probRichOption.nextvalue;
-			// 0 means alarm turned off outcome; -1 means aversive outcome
-		} else if (values.poorInstOption == "l") {
-			// if left button is the poor instrumental option
-			values.currentOutcome = list.probPoorOption.nextvalue;
-		}
-		if (values.currentOutcome == -1) {
-			values.chooseAversiveOutcome = values.instLeftAversiveOutcome;
-			values.chooseSound = values.leftButtonAversiveSound;
-			trial.instruFeedback.insertstimulustime(sound.allTestSounds, 0);
-			trial.instruFeedback.insertstimulustime(picture.aversiveOutcomeStimuli, 0);
-		} else {
-			values.chooseAversiveOutcome = 0;
-			values.chooseSound = "";
-			trial.instruFeedback.insertstimulustime(picture.alarmTurnedOff, 0);
-		}
-	} else if (trial.instruResponse.response == parameters.rightButtonBox) {
-		trial.instruFeedback.insertStimulustime(picture.leverRightDown, 0);
-		// choosing if we should provide the aversive or alarm turned off outcome
-		if (values.richInstOption == "r") {
-			// if left button is the rich instrumental option
-			// rich option means that left button prevents the aversive outcome O1 with a 70% probability.
-			values.currentOutcome = list.probRichOption.nextvalue;
-			// 0 means alarm turned off outcome; -1 means aversive outcome
-		} else if (values.poorInstOption == "r") {
-			// if left button is the poor instrumental option
-			values.currentOutcome = list.probPoorOption.nextvalue;
-		}
-		if (values.currentOutcome == -1) {
-			values.chooseAversiveOutcome = values.instRightAversiveOutcome;
-			values.chooseSound = values.rightButtonAversiveSound;
-			trial.instruFeedback.insertstimulustime(sound.allTestSounds, 0);
-			trial.instruFeedback.insertstimulustime(picture.aversiveOutcomeStimuli, 0);
-		} else {
-			values.chooseAversiveOutcome = 0;
-			values.chooseSound = "";
-			trial.instruFeedback.insertstimulustime(picture.alarmTurnedOff, 0);
-		}
-	} else {
-		// if no button is pressed, the participants receive a 3rd aversive noise
-		trial.instruFeedback.insertStimulusTime(picture.leverBothUpright, 0);
-		values.chooseSound = values.sound3rdAversive;
-		trial.instruFeedback.insertStimulusTime(sound.allTestSounds, 0);
-	}
-<trial instruFeedback>
+<trial instruFeedbackNeutral>
 / ontrialbegin = [
-	values.trialStartTime = trial.instruFeedback.timestamp;
+	values.trialStartTime = trial.instruFeedbackNeutral.timestamp;
 	values.markerETtrialID = 201;
 	values.markerETtrialID = concat(values.markerETtrialID, format("%02d", values.instruTrialNum));
 	values.markerETtrialID = concat(values.markerETtrialID, 101);
@@ -1313,43 +1288,15 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 	expressions.setport4;
 	expressions.setport5;
 	if (trial.instruResponse.response == parameters.leftButtonBox) {
-		trial.instruFeedback.insertStimulustime(picture.leverLeftDown, 0);
-		values.currentOutcome = values.currentOutcomeLeft;
-		if (values.currentOutcome == -1) {
-			values.chooseAversiveOutcome = values.instLeftAversiveOutcome;
-			values.chooseSound = values.leftButtonAversiveSound;
-			trial.instruFeedback.insertstimulustime(sound.allTestSounds, 0);
-			trial.instruFeedback.insertstimulustime(picture.aversiveOutcomeStimuli, 0);
-		} else {
-			values.chooseAversiveOutcome = 0;
-			values.chooseSound = "";
-			trial.instruFeedback.insertstimulustime(picture.alarmTurnedOff, 0);
-		}
+		trial.instruFeedbackNeutral.insertStimulustime(picture.leverLeftDown, 0);
+		trial.instruFeedbackNeutral.insertstimulustime(picture.alarmTurnedOff, 0);
 	} else if (trial.instruResponse.response == parameters.rightButtonBox) {
-		trial.instruFeedback.insertStimulustime(picture.leverRightDown, 0);
-		values.currentOutcome = values.currentOutcomeRight;
-		if (values.currentOutcome == -1) {
-			values.chooseAversiveOutcome = values.instRightAversiveOutcome;
-			values.chooseSound = values.rightButtonAversiveSound;
-			trial.instruFeedback.insertstimulustime(sound.allTestSounds, 0);
-			trial.instruFeedback.insertstimulustime(picture.aversiveOutcomeStimuli, 0);
-		} else {
-			values.chooseAversiveOutcome = 0;
-			values.chooseSound = "";
-			trial.instruFeedback.insertstimulustime(picture.alarmTurnedOff, 0);
-		}
-		} else {
-			// if no button is pressed, the participants receive a 3rd aversive noise
-			values.chooseAversiveOutcome = 0;
-			trial.instruFeedback.insertStimulusTime(picture.leverBothUpright, 0);
-			values.chooseSound = values.sound3rdAversive;
-			trial.instruFeedback.insertStimulusTime(sound.allTestSounds, 0);
-		}
-		if (values.chooseAversiveOutcome == 1) {
-			trial.instruFeedback.insertstimulustime(rewardAdisplayedPhysio, 10); // 101
-		} else if (values.chooseAversiveOutcome == 2) {
-			trial.instruFeedback.insertstimulustime(rewardBdisplayedPhysio, 10); // 103
-		}
+		trial.instruFeedbackNeutral.insertStimulustime(picture.leverRightDown, 0);
+		trial.instruFeedbackNeutral.insertstimulustime(picture.alarmTurnedOff, 0);
+	} else {
+		trial.instruFeedbackNeutral.insertStimulusTime(picture.leverBothUpright, 0);
+		trial.instruFeedbackNeutral.insertStimulusTime(sound.allTestSounds, 0);
+	}
 	]
 / stimulustimes = [0 = clearscreen, controlPanel, portETtrialID; 1 = portETdisplayOn; 997 = portETdisplayOff; 998 = portETtrialEnd]
 / response = noresponse
@@ -1359,10 +1306,71 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 / ontrialend = [
 	values.trialEndTime = script.elapsedtime;
 	values.trialDur = values.trialEndTime - values.trialStartTime;
-	trial.instruFeedback.resetstimulusframes();
+	trial.instruFeedbackNeutral.resetstimulusframes();
 ]
 </trial>
 
+<trial instruFeedbackA>
+/ ontrialbegin = [
+	values.trialStartTime = trial.instruFeedbackA.timestamp;
+	values.markerETtrialID = 201;
+	values.markerETtrialID = concat(values.markerETtrialID, format("%02d", values.instruTrialNum));
+	values.markerETtrialID = concat(values.markerETtrialID, 101);
+	values.markerETDisplayOn = 3010;
+	values.markerETdisplayOff = 5010;
+	expressions.setport3;
+	expressions.setport4;
+	expressions.setport5;
+	if (trial.instruResponse.response == parameters.leftButtonBox) {
+		trial.instruFeedbackA.insertStimulustime(picture.leverLeftDown, 0);
+	} else if (trial.instruResponse.response == parameters.rightButtonBox) {
+		trial.instruFeedbackA.insertStimulustime(picture.leverRightDown, 0);
+	}
+	trial.instruFeedbackA.insertstimulustime(sound.allTestSounds, 0);
+	trial.instruFeedbackA.insertstimulustime(picture.aversiveOutcomeStimuli, 0);
+]
+/ stimulustimes = [0 = clearscreen, controlPanel, portETtrialID; 1 = portETdisplayOn; 10 = rewardAdisplayedPhysio; 997 = portETdisplayOff; 998 = portETtrialEnd]
+/ response = noresponse
+/ trialduration = parameters.instruFeedbackDur -1
+/ screencapture = true
+/ recorddata = true
+/ ontrialend = [
+	values.trialEndTime = script.elapsedtime;
+	values.trialDur = values.trialEndTime - values.trialStartTime;
+	trial.instruFeedbackA.resetstimulusframes();
+]
+</trial>
+
+<trial instruFeedbackB>
+/ ontrialbegin = [
+	values.trialStartTime = trial.instruFeedbackB.timestamp;
+	values.markerETtrialID = 201;
+	values.markerETtrialID = concat(values.markerETtrialID, format("%02d", values.instruTrialNum));
+	values.markerETtrialID = concat(values.markerETtrialID, 101);
+	values.markerETDisplayOn = 3010;
+	values.markerETdisplayOff = 5010;
+	expressions.setport3;
+	expressions.setport4;
+	expressions.setport5;
+	if (trial.instruResponse.response == parameters.leftButtonBox) {
+		trial.instruFeedbackB.insertStimulustime(picture.leverLeftDown, 0);
+	} else if (trial.instruResponse.response == parameters.rightButtonBox) {
+		trial.instruFeedbackB.insertStimulustime(picture.leverRightDown, 0);
+	}
+	trial.instruFeedbackB.insertstimulustime(sound.allTestSounds, 0);
+	trial.instruFeedbackB.insertstimulustime(picture.aversiveOutcomeStimuli, 0);
+]
+/ stimulustimes = [0 = clearscreen, controlPanel, portETtrialID; 1 = portETdisplayOn; 10 = rewardBdisplayedPhysio; 997 = portETdisplayOff; 998 = portETtrialEnd]
+/ response = noresponse
+/ trialduration = parameters.instruFeedbackDur -1
+/ screencapture = true
+/ recorddata = true
+/ ontrialend = [
+	values.trialEndTime = script.elapsedtime;
+	values.trialDur = values.trialEndTime - values.trialStartTime;
+	trial.instruFeedbackB.resetstimulusframes();
+]
+</trial>
 
 <text instruQuizQuestion>
 / items = ("Which button is associated with this outcome?")
